@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 
-export default function CodePad(params) {
-    const [code, updateCode] = useState('');
-    const { onCodeSubmit } = params;
+export default function CipherPad(params) {
+    const { onCipherSubmit } = params;
+    const [cipher, updateCipher] = useState('');
 
     function handleSubmit(e) {
         e.preventDefault();
 
-        onCodeSubmit(code);
-        updateCode('');
+        if (cipher.length === 4) {
+            onCipherSubmit(cipher);
+            updateCipher('');
+        }
     }
 
     function onTextChange(e) {
@@ -24,12 +26,12 @@ export default function CodePad(params) {
                 return;
         }
 
-        updateCode(val);
+        updateCipher(val);
     }
 
     return (
         <form onSubmit={handleSubmit}>
-            <input type="number" value={code} onChange={onTextChange} className="number-input" />
+            <input type="number" value={cipher} onChange={onTextChange} className="number-input" />
             <button type="submit">
                 Crack
             </button>

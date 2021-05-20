@@ -1,33 +1,33 @@
 import React, { useState } from 'react';
-import CodePad from '../components/CodePad';
-import CodeGuess from '../components/CodeGuess';
+import CipherPad from '../components/CipherPad';
+import CipherGuess from '../components/CipherGuess';
+import { generateCipher, getHitCount, getIncludeCount } from '../utilities/CipherUtil';
 import { useHistory } from 'react-router-dom';
 import '../styles/Game.scss';
 
 export default function GamePage() {
-    const [masterCode, setMasterCode] = useState();
-    const [codes, setCodes] = useState([]);
+    const [masterCipher, setMasterCipher] = useState();
+    const [cipherEntries, setCipherEntries] = useState([]);
     const history = useHistory();
 
-    function onCodeSubmit(code) {
-        if (!masterCode)
-            generateMasterCode();
+    initializeCipher();
 
-        setCodes([...codes, code]);
+    function initializeCipher() {
+        if (!masterCipher)
+            setMasterCipher(generateCipher());
     }
 
-    function generateMasterCode() {
-        let masterCode = '';
+    function onCipherSubmit(cipher) {
+        const hits = getHitCount(cipher, masterCipher);
+        const includes = getIncludeCount(cipher, masterCipher) - hits;
 
-        do {
-            const randomDigit = Math.floor(Math.random() * 10);
-            
-            if (!masterCode.includes(randomDigit.toString()))
-                masterCode += randomDigit;
-        } while(masterCode.length < 4);
+        let newCipherEntry = {
+            cipher,
+            hits,
+            includes
+        }
 
-        setMasterCode(masterCode);
-        console.log(masterCode);
+        setCipherEntries([...cipherEntries, newCipherEntry]);
     }
 
     return (
@@ -36,9 +36,9 @@ export default function GamePage() {
                 Game Page
             </h1>
             {
-                codes.map((code, index) => <CodeGuess code={code} key={index}/>)
+                cipherEntries.map((cipherEntry, index) => <CipherGuess {...cipherEntry} key={index}/>)
             }
-            <CodePad onCodeSubmit={onCodeSubmit} />
+            <CipherPad onCipherSubmit={onCipherSubmit} />
             <button onClick={() => { history.push('/') }}>
                 Return to splash
             </button>
